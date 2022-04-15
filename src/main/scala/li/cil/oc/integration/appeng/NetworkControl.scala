@@ -150,6 +150,7 @@ trait NetworkControl[AETile >: Null <: TileEntity with IGridProxyable with IActi
     filter.forall {
       case (key: String, value: AnyRef) => 
         val stack_value = stack.get(key)
+        if (stack_value == null) return false
         value match {
           case number: Number => stack_value match {
             case stack_number: Number => number.intValue == stack_number.intValue
