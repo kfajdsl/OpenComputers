@@ -161,7 +161,7 @@ trait FluidContainerTransfer extends traits.WorldAware with traits.SideRestricte
     }
   }
 
-  private def withReplayableMove(handlerA: Option[IFluidHandler], handlerB: Option[IFluidHandler], moveFunc: (IFluidHandler, IFluidHandler) => Int, cb: (IFluidHandler, IFluidHandler, IFluidHandler => Unit, IFluidHandler => Unit) => Boolean) = {
+  private def withReplayableMove(handlerA: Option[IFluidHandler], handlerB: Option[IFluidHandler], moveFunc: (IFluidHandler, IFluidHandler) => Int, afterMovedFunc: (IFluidHandler, IFluidHandler, IFluidHandler => Unit, IFluidHandler => Unit) => Boolean) = {
     val moved = handlerA.fold(0)(a =>
       handlerB.fold(0)(b => {
         val replayableA = FluidContainerUtils.replayableFluidHandler(a)
@@ -169,20 +169,20 @@ trait FluidContainerTransfer extends traits.WorldAware with traits.SideRestricte
         moveFunc(replayableA, replayableB) match {
           case 0 => 0
           case moved =>
-            if (cb(a, b, h => FluidContainerUtils.replay(replayableA, h), h => FluidContainerUtils.replay(replayableB, h))) moved else 0
+            if (afterMovedFunc(a, b, h => FluidContainerUtils.replay(replayableA, h), h => FluidContainerUtils.replay(replayableB, h))) moved else 0
         }
       })
     )
     result(moved > 0, moved)
   }
 
-  private def withMove(handlerA: Option[IFluidHandler], handlerB: Option[IFluidHandler], moveFunc: (IFluidHandler, IFluidHandler) => Int, cb: (IFluidHandler, IFluidHandler) => Boolean) = {
+  private def withMove(handlerA: Option[IFluidHandler], handlerB: Option[IFluidHandler], moveFunc: (IFluidHandler, IFluidHandler) => Int, afterMovedFunc: (IFluidHandler, IFluidHandler) => Boolean) = {
     val moved = handlerA.fold(0)(a =>
       handlerB.fold(0)(b => {
         moveFunc(a, b) match {
           case 0 => 0
           case moved =>
-            if (cb(a, b)) moved else 0
+            if (afterMovedFunc(a, b)) moved else 0
         }
       })
     )
