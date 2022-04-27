@@ -47,7 +47,7 @@ trait WorldFluidContainerAnalytics extends WorldAware with SideRestricted with N
       Option((FluidContainerRegistry.getFluidForFilledItem(stack), FluidContainerRegistry.getContainerCapacity(stack)))
     }
     else if (FluidContainerRegistry.isEmptyContainer(stack)) {
-      Option((new FluidStack(0, 0), FluidContainerRegistry.getContainerCapacity(stack)))
+      Option((null, FluidContainerRegistry.getContainerCapacity(stack)))
     }
     else stack.getItem match {
       case from: IFluidContainerItem => Option((from.getFluid(stack), from.getCapacity(stack)))
