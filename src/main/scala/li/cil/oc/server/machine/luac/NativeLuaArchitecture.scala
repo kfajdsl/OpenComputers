@@ -376,7 +376,7 @@ abstract class NativeLuaArchitecture(val machine: api.machine.Machine) extends A
 
       try lua.gc(LuaState.GcAction.COLLECT, 0) catch {
         case t: Throwable =>
-          OpenComputers.log.warn(s"Error cleaning up loaded computer @ ${machinePosition}. This either means the server is badly overloaded or a user created an evil __gc method, accidentally or not.")
+          OpenComputers.log.warn(s"Error cleaning up loaded computer @ ${machine.host().machinePosition()}. This either means the server is badly overloaded or a user created an evil __gc method, accidentally or not.")
           machine.crash("error in garbage collector, most likely __gc method timed out")
       }
     } catch {
