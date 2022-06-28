@@ -717,4 +717,9 @@ appengTunnel {
   type: shapeless
   input: [{item="appliedenergistics2:item.ItemMultiPart", subID=460}, "oc:adapter"]
 }
-ritegUpgrade = false
+
+ritegUpgrade {
+  input: [[nuggetIron, "oc:capacitor", nuggetIron]
+          ["oc:capacitor", "IC2:itemRTGPellet", "oc:capacitor"]
+          [nuggetIron, "oc:generatorUpgrade", nuggetIron]]
+}
