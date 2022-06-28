@@ -554,7 +554,7 @@ object Items extends ItemAPI {
     // GTNH
     Recipes.addSubItem(new UpgradeConfigurator(multi), Constants.ItemName.ConfiguratorUpgrade, "oc:configuratorUpgrade")
 
-    Recipes.addSubItem(new item.UpgradeRITEG(multi), Constants.ItemName.RITEGUpgrade)
+    Recipes.addSubItem(new item.UpgradeRITEG(multi), Constants.ItemName.RITEGUpgrade, "oc:rtgUpgrade")
 
     // Register aliases.
     for ((k, v) <- aliases) {
