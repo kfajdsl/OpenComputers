@@ -184,6 +184,7 @@ object ModOpenComputers extends ModProxy {
     api.Driver.add(DriverNetworkCard.Provider)
     api.Driver.add(DriverRedstoneCard.Provider)
     api.Driver.add(DriverWirelessNetworkCard.Provider)
+    api.Driver.add(DriverTpsCard.Provider)
 
     api.Driver.add(DriverGeolyzer.Provider)
     api.Driver.add(DriverMotionSensor.Provider)

@@ -723,3 +723,8 @@ ritegUpgrade {
           ["oc:capacitor", "IC2:itemRTGPellet", "oc:capacitor"]
           [nuggetIron, "oc:generatorUpgrade", nuggetIron]]
 }
+
+tpsCard {
+   input: [["oc:circuitChip1", "minecraft:clock", "oc:analyzer"]
+          ["", "oc:materialCard", ""]]
+}

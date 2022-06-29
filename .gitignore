@@ -8,6 +8,7 @@
 .project
 /bin/
 /config/
+/classes/
 /crash-reports/
 /logs/
 options.txt
