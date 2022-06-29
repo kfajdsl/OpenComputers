@@ -7,7 +7,7 @@ import li.cil.oc.server.command.DebugWhitelistCommand
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.world.World
-import li.cil.oc.server.component.DebugCard
+import li.cil.oc.server.component.{DebugCard => CDebugCard}
 
 class TpsCard(val parent: Delegator) extends traits.Delegate {
   override protected def tooltipExtended(stack: ItemStack, tooltip: util.List[String]): Unit = {
@@ -21,7 +21,7 @@ class TpsCard(val parent: Delegator) extends traits.Delegate {
       val name = player.getCommandSenderName
 
       if (data.access.exists(_.player == name)) data.access = None
-      else data.access = Some(DebugCard.AccessContext(name, ""))
+      else data.access = Some(CDebugCard.AccessContext(name, ""))
 
       data.save(stack)
       player.swingItem()

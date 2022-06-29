@@ -18,20 +18,20 @@ public class DriverTeleporter extends DriverSidedTileEntity {
 
     @Override
     public ManagedEnvironment createEnvironment(World world, int x, int y, int z, ForgeDirection side) {
-        return new DriverTeleporter.Environment((TileEntityTeleporter)world.getTileEntity(x, y, z));
+        return new DriverTeleporter.Environment((TileEntityTeleporter) world.getTileEntity(x, y, z));
     }
 
     public static final class Environment extends ManagedTileEntityEnvironment<TileEntityTeleporter> {
         public Environment(final TileEntityTeleporter tileEntity) {
-            super(tileEntity,"ic2_teleporter");
+            super(tileEntity, "ic2_teleporter");
         }
+
         @Callback(doc = "function(X:number, Y:number, Z:number)")
         public Object[] setCoords(final Context context, final Arguments args) {
             if (args.isInteger(0) && args.isInteger(1) && args.isInteger(2)) {
                 tileEntity.setTarget(args.checkInteger(0), args.checkInteger(1), args.checkInteger(2));
             }
-            return new Object[]{};
+            return new Object[] {};
         }
     }
-
 }
