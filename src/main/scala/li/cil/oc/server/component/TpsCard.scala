@@ -19,9 +19,8 @@ import scala.collection.convert.WrapAsScala._
 import scala.collection.immutable.Map
 
 class TpsCard (val host: EnvironmentHost) extends prefab.ManagedEnvironment with DeviceInfo {
-  override val node = api.Network.newNode(this, Visibility.None).
-    withComponent("tps_card").
-    withConnector().
+  override val node = api.Network.newNode(this, Visibility.Neighbors).
+    withComponent("tps_card", Visibility.Neighbors).
     create()
 
   private final lazy val deviceInfo = Map(
@@ -106,13 +105,16 @@ class TpsCard (val host: EnvironmentHost) extends prefab.ManagedEnvironment with
   }
 
   @Callback(doc = """function(className:string, dimension:number):table -- Returns return a table with all the coordinates of the entities matching the class name in that dimension.""")
-  def getCoordinatesForEntityClassInDim(context: Context, args: Arguments): Array[AnyRef] = {
-    DebugCard.checkAccess()
-    val className = args.checkString(0)
-    val dim = args.checkInteger(1)
-    val ents = CoFHCore.server.worldServers(dim).loadedEntityList.filter( e => e.getClass.getName.equals(className))
-    result(ents.map{ case e : Entity => (e.posX, e.posY, e.posZ) })
-  }
+  def getCoordinatesForEntityClassInDim(context: Context, args: Arguments): Array[AnyRef] =
+    access match {
+      case None => result(null, "Access denied")
+      case _ =>
+        val className = args.checkString(0)
+        val dim = args.checkInteger(1)
+        val ents = CoFHCore.server.worldServers(dim).loadedEntityList.filter(e => e.getClass.getName.equals(className))
+        result(ents.map{ case e : Entity => (e.posX, e.posY, e.posZ) })
+    }
+
 
   override def load(nbt: NBTTagCompound): Unit = {
     super.load(nbt)
