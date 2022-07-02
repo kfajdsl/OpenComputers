@@ -6,7 +6,7 @@
   - An Analyzer can now be installed in a Tablet as an upgrade.
   - Provides the `barcode_reader` component.
   - When clicking on a block with a tablet containing this upgrade, the `tablet_use` event will contain information the Analyzer would normally reveal.
-  - This allows getting components' addresses into OC directly by clicking on blocks. 
+  - This allows getting components' addresses into OC directly by clicking on blocks.
 * Added: Config option to set max signal queue size (default 256, the same as before).
   - Signals pushed to the computer when the queue is full are dropped.
 * Added: Allow different HTTP request methods in `internet.request` (the method to use is now the fourth optional argument).
@@ -57,13 +57,13 @@
 * Fixed: `reset` alias to reset the screen resolution to its maximum.
 * Fixed: Certain TCP connections in Network loot disk
 * Fixed: Various vt100 fixes
-* Fixed: Now errors properly on using `print` with bad `__string` metamethods 
+* Fixed: Now errors properly on using `print` with bad `__string` metamethods
 
 ## List of contributors
-payonel,  
-AmandaCameron, wkalinin,  
-LizzyTrickster, svitoos,  
-kchanakira, seebs,  
-asiekierka,  
-3TUSK, ZeroAurora,  
+payonel,
+AmandaCameron, wkalinin,
+LizzyTrickster, svitoos,
+kchanakira, seebs,
+asiekierka,
+3TUSK, ZeroAurora,
 JackyWangMislantiaJnirvana
