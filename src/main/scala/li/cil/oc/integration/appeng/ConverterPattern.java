@@ -15,16 +15,16 @@ public final class ConverterPattern implements Converter {
                 PatternHelper p = new PatternHelper(is, null);
                 Map[] inputs = new Map[p.getInputs().length];
                 for (int i = 0; i < p.getInputs().length; ++i) {
-                    inputs[i] = new HashMap<Object, Object>();
+                    inputs[i] = new HashMap<>();
                     if (p.getInputs()[i] == null) continue;
                     ItemStack input = p.getInputs()[i].getItemStack();
                     inputs[i].put("name", input.getItem().getItemStackDisplayName(input));
                     inputs[i].put("count", input.stackSize);
                 }
                 output.put("inputs", inputs);
-                Map[] results = new Map[p.getInputs().length];
+                Map[] results = new Map[p.getOutputs().length];
                 for (int i = 0; i < p.getOutputs().length; ++i) {
-                    results[i] = new HashMap<Object, Object>();
+                    results[i] = new HashMap<>();
                     if (p.getOutputs()[i] == null) continue;
                     ItemStack result = p.getOutputs()[i].getItemStack();
                     results[i].put("name", result.getItem().getItemStackDisplayName(result));
