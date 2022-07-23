@@ -169,7 +169,7 @@ trait Agent extends traits.WorldControl with traits.InventoryControl with traits
     val facing = checkSideForAction(args, 0)
     val sides =
       if (args.isInteger(1)) {
-        Iterable(args.checkSideAny(1))
+        Iterable(checkSideForUse(args, 1))
       }
       else {
         // Always try the direction we're looking first.
@@ -309,6 +309,7 @@ trait Agent extends traits.WorldControl with traits.InventoryControl with traits
   // ----------------------------------------------------------------------- //
 
   protected def checkSideForFace(args: Arguments, n: Int, facing: ForgeDirection) = agent.toGlobal(args.checkSideForFace(n, agent.toLocal(facing)))
+  protected def checkSideForUse(args: Arguments, n: Int) = args.checkSideAny(n)
 
   protected def pick(player: Player, range: Double) = {
     val origin = Vec3.createVectorHelper(
