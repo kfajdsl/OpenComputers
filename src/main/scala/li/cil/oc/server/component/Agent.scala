@@ -169,7 +169,7 @@ trait Agent extends traits.WorldControl with traits.InventoryControl with traits
     val facing = checkSideForAction(args, 0)
     val sides =
       if (args.isInteger(1)) {
-        Iterable(checkSideForFace(args, 1, facing))
+        Iterable(args.checkSideAny(1))
       }
       else {
         // Always try the direction we're looking first.
