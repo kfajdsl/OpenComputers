@@ -196,9 +196,6 @@ object EventHandler {
         if (!LuaStateFactory.isAvailable && !LuaStateFactory.luajRequested) {
           player.addChatMessage(Localization.Chat.WarningLuaFallback)
         }
-        if (Recipes.hadErrors) {
-          player.addChatMessage(Localization.Chat.WarningRecipes)
-        }
         if (ClassTransformer.hadErrors) {
           player.addChatMessage(Localization.Chat.WarningClassTransformer)
         }
