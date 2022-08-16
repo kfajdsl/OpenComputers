@@ -60,7 +60,7 @@ object DriverBlockInterface extends DriverSidedTileEntity {
               val dbStack = database.getStackInSlot(entry - 1)
               if (dbStack == null || size < 1) null
               else {
-                dbStack.stackSize = math.min(size, dbStack.getMaxStackSize)
+                dbStack.stackSize = size
                 dbStack
               }
             case _ => throw new IllegalArgumentException("not a database")
