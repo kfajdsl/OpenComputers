@@ -21,9 +21,9 @@ repositories {
             artifact()
         }
     }
-    maven {
-        name ="cil"
-        url = "https://maven.cil.li/"
+    ivy {
+        name "OC LuaJ/JNLua dependencies"
+        artifactPattern "http://asie.pl/javadeps/[module]-[revision](-[classifier]).[ext]"
         metadataSources {
             artifact()
         }

@@ -1,10 +1,7 @@
 package li.cil.oc.client.renderer.font;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.ByteBuffer;
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
 import li.cil.oc.OpenComputers;
 import li.cil.oc.Settings;
 import li.cil.oc.util.FontUtils;
@@ -12,17 +9,20 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.BufferUtils;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.ByteBuffer;
+
 public class FontParserHex implements IGlyphProvider {
     private static final byte[] OPAQUE = {(byte) 255, (byte) 255, (byte) 255, (byte) 255};
     private static final byte[] TRANSPARENT = {0, 0, 0, 0};
 
-    private final byte[][] glyphs = new byte[FontUtils.codepoint_limit()][];
+    private final TIntObjectMap<byte[]> glyphs = new TIntObjectHashMap<>();
 
     @Override
     public void initialize() {
-        for (int i = 0; i < glyphs.length; ++i) {
-            glyphs[i] = null;
-        }
         try {
             final InputStream font = Minecraft.getMinecraft()
                     .getResourceManager()
@@ -36,7 +36,10 @@ public class FontParserHex implements IGlyphProvider {
                 while ((line = input.readLine()) != null) {
                     final String[] info = line.split(":");
                     final int charCode = Integer.parseInt(info[0], 16);
-                    if (charCode < 0 || charCode >= glyphs.length) continue; // Out of bounds.
+                    if (charCode < 0 || charCode >= FontUtils.codepoint_limit()) {
+                        OpenComputers.log().warn(String.format("Unicode font contained unexpected glyph: U+%04X, ignoring", charCode));
+                        continue; // Out of bounds.
+                    }
                     final int expectedWidth = FontUtils.wcwidth(charCode);
                     if (expectedWidth < 1) continue; // Skip control characters.
                     // Two chars representing one byte represent one row of eight pixels.
@@ -46,10 +49,10 @@ public class FontParserHex implements IGlyphProvider {
                         for (int i = 0; i < glyph.length; i++) {
                             glyph[i] = (byte) Integer.parseInt(info[1].substring(i * 2, i * 2 + 2), 16);
                         }
-                        if (glyphs[charCode] == null) {
+                        if (!glyphs.containsKey(charCode)) {
                             glyphCount++;
                         }
-                        glyphs[charCode] = glyph;
+                        glyphs.put(charCode, glyph);
                     } else if (Settings.get().logHexFontErrors()) {
                         OpenComputers.log()
                                 .warn(String.format(
@@ -72,9 +75,11 @@ public class FontParserHex implements IGlyphProvider {
 
     @Override
     public ByteBuffer getGlyph(int charCode) {
-        if (charCode < 0 || charCode >= glyphs.length || glyphs[charCode] == null || glyphs[charCode].length == 0)
+        if (!glyphs.containsKey(charCode))
             return null;
-        final byte[] glyph = glyphs[charCode];
+        final byte[] glyph = glyphs.get(charCode);
+        if (glyph == null || glyph.length <= 0)
+            return null;
         final ByteBuffer buffer = BufferUtils.createByteBuffer(glyph.length * getGlyphWidth() * 4);
         for (byte aGlyph : glyph) {
             int c = ((int) aGlyph) & 0xFF;
