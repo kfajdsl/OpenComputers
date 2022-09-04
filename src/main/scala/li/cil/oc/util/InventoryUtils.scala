@@ -2,6 +2,7 @@ package li.cil.oc.util
 
 import li.cil.oc.util.ExtendedWorld._
 import net.minecraft.block.BlockChest
+import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.entity.item.EntityMinecartContainer
 import net.minecraft.entity.player.EntityPlayer
@@ -16,7 +17,7 @@ import scala.collection.convert.WrapAsScala._
 object InventoryUtils {
   /**
    * Check if two item stacks are of equal type, ignoring the stack size.
-   * <p/>
+   * <br>
    * Optionally check for equality in NBT data.
    */
   def haveSameItemType(stackA: ItemStack, stackB: ItemStack, checkNBT: Boolean = false) =
@@ -26,40 +27,52 @@ object InventoryUtils {
       (!checkNBT || ItemStack.areItemStackTagsEqual(stackA, stackB))
 
   /**
-   * Retrieves an actual inventory implementation for a specified world coordinate.
-   * <p/>
+   * Retrieves an actual inventory implementation for a specified world coordinate,
+   * complete with a reference to the source of said implementation.
+   * <br>
    * This performs special handling for (double-)chests and also checks for
    * mine carts with chests.
    */
-  def inventoryAt(position: BlockPosition): Option[IInventory] = position.world match {
+  def inventorySourceAt(position: BlockPosition): Option[InventorySource] = position.world match {
     case Some(world) if world.blockExists(position) => (world.getBlock(position), world.getTileEntity(position)) match {
-      case (block: BlockChest, chest: TileEntityChest) => Option(block.func_149951_m(world, chest.xCoord, chest.yCoord, chest.zCoord))
-      case (_, inventory: IInventory) => Some(inventory)
+      case (block: BlockChest, chest: TileEntityChest) => Option(block.func_149951_m(world, chest.xCoord, chest.yCoord, chest.zCoord)).
+        map(a => BlockInventorySource(position, a))
+      case (_, inventory: IInventory) => Some(BlockInventorySource(position, inventory))
       case _ => world.getEntitiesWithinAABB(classOf[EntityMinecartContainer], position.bounds).
         map(_.asInstanceOf[EntityMinecartContainer]).
-        find(!_.isDead)
+        find(!_.isDead).
+        map(a => EntityInventorySource(a, a))
     }
     case _ => None
   }
 
   /**
+   * Retrieves an actual inventory implementation for a specified world coordinate.
+   * <br>
+   * This performs special handling for (double-)chests and also checks for
+   * mine carts with chests.
+   */
+  def inventoryAt(position: BlockPosition): Option[IInventory] = inventorySourceAt(position).
+    map(a => a.inventory)
+
+  /**
    * Inserts a stack into an inventory.
-   * <p/>
+   * <br>
    * Only tries to insert into the specified slot. This <em>cannot</em> be
    * used to empty a slot. It can only insert stacks into empty slots and
    * merge additional items into an existing stack in the slot.
-   * <p/>
+   * <br>
    * The passed stack's size will be adjusted to reflect the number of items
    * inserted into the inventory, i.e. if 10 more items could fit into the
    * slot, the stack's size will be 10 smaller than before the call.
-   * <p/>
+   * <br>
    * This will return <tt>true</tt> if <em>at least</em> one item could be
    * inserted into the slot. It will return <tt>false</tt> if the passed
    * stack did not change.
-   * <p/>
+   * <br>
    * This takes care of handling special cases such as sided inventories,
    * maximum inventory and item stack sizes.
-   * <p/>
+   * <br>
    * The number of items inserted can be limited, to avoid unnecessary
    * changes to the inventory the stack may come from, for example.
    */
@@ -99,23 +112,23 @@ object InventoryUtils {
 
   /**
    * Extracts a stack from an inventory.
-   * <p/>
+   * <br>
    * Only tries to extract from the specified slot. This <em>can</em> be used
    * to empty a slot. It will extract items using the specified consumer method
    * which is called with the extracted stack before the stack in the inventory
    * that we extract from is cleared from. This allows placing back excess
    * items with as few inventory updates as possible.
-   * <p/>
+   * <br>
    * The consumer is the only way to retrieve the actually extracted stack. It
    * is called with a separate stack instance, so it does not have to be copied
    * again.
-   * <p/>
+   * <br>
    * This will return the <tt>number</tt> of items extracted. It will return
    * <tt>zero</tt> if the stack in the slot did not change.
-   * <p/>
+   * <br>
    * This takes care of handling special cases such as sided inventories and
    * maximum stack sizes.
-   * <p/>
+   * <br>
    * The number of items extracted can be limited, to avoid unnecessary
    * changes to the inventory the stack is extracted from. Note that this could
    * also be achieved by a check in the consumer, but it saves some unnecessary
@@ -151,15 +164,15 @@ object InventoryUtils {
 
   /**
    * Inserts a stack into an inventory.
-   * <p/>
+   * <br>
    * This will try to fit the stack in any and as many as necessary slots in
    * the inventory. It will first try to merge the stack in stacks already
    * present in the inventory. After that it will try to fit the stack into
    * empty slots in the inventory.
-   * <p/>
+   * <br>
    * This uses the <tt>insertIntoInventorySlot</tt> method, and therefore
    * handles special cases such as sided inventories and stack size limits.
-   * <p/>
+   * <br>
    * This returns <tt>true</tt> if at least one item was inserted. The passed
    * item stack will be adjusted to reflect the number items inserted, by
    * having its size decremented accordingly.
@@ -211,13 +224,13 @@ object InventoryUtils {
 
   /**
    * Extracts a slot from an inventory.
-   * <p/>
+   * <br>
    * This will try to extract a stack from any inventory slot. It will iterate
    * all slots until an item can be extracted from a slot.
-   * <p/>
+   * <br>
    * This uses the <tt>extractFromInventorySlot</tt> method, and therefore
    * handles special cases such as sided inventories and stack size limits.
-   * <p/>
+   * <br>
    * This returns <tt>true</tt> if at least one item was extracted.
    */
   def extractAnyFromInventory(consumer: ItemStack => Unit, inventory: IInventory, side: ForgeDirection, limit: Int = 64): Int = {
@@ -235,11 +248,11 @@ object InventoryUtils {
 
   /**
     * Extracts an item stack from an inventory.
-    * <p/>
+    * <br>
     * This will try to remove items of the same type as the specified item stack
     * up to the number of the stack's size for all slots in the specified inventory.
     * If exact is true, the items colated will also match meta data
-    * <p/>
+    * <br>
     * This uses the <tt>extractFromInventorySlot</tt> method, and therefore
     * handles special cases such as sided inventories and stack size limits.
     */
@@ -285,15 +298,15 @@ object InventoryUtils {
 
   /**
    * Transfers some items between two inventories.
-   * <p/>
+   * <br>
    * This will try to extract up the specified number of items from any inventory,
    * then insert it into the specified sink inventory. If the insertion fails, the
    * items will remain in the source inventory.
-   * <p/>
+   * <br>
    * This uses the <tt>extractFromInventory</tt> and <tt>insertIntoInventory</tt>
    * methods, and therefore handles special cases such as sided inventories and
    * stack size limits.
-   * <p/>
+   * <br>
    * This returns <tt>true</tt> if at least one item was transferred.
    */
   def transferBetweenInventories(source: IInventory, sourceSide: ForgeDirection, sink: IInventory, sinkSide: Option[ForgeDirection], limit: Int = 64) =
@@ -408,3 +421,9 @@ object InventoryUtils {
     case _ => null
   }
 }
+
+sealed trait InventorySource {
+  def inventory: IInventory
+}
+final case class BlockInventorySource(position: BlockPosition, inventory: IInventory) extends InventorySource
+final case class EntityInventorySource(entity: Entity, inventory: IInventory) extends InventorySource
