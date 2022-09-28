@@ -439,7 +439,8 @@ class Settings(val config: Config) {
   val limitMemory = !config.getBoolean("debug.disableMemoryLimit")
   val forceCaseInsensitive = config.getBoolean("debug.forceCaseInsensitiveFS")
   val logFullLibLoadErrors = config.getBoolean("debug.logFullNativeLibLoadErrors")
-  val forceNativeLib = config.getString("debug.forceNativeLibWithName")
+  val forceNativeLibPlatform = config.getString("debug.forceNativeLibPlatform")
+  val forceNativeLibPathFirst = config.getString("debug.forceNativeLibPathFirst")
   val logOpenGLErrors = config.getBoolean("debug.logOpenGLErrors")
   val logHexFontErrors = config.getBoolean("debug.logHexFontErrors")
   val alwaysTryNative = config.getBoolean("debug.alwaysTryNative")
@@ -519,7 +520,7 @@ object Settings {
       catch {
         case e: Throwable =>
           if (file.exists()) {
-            OpenComputers.log.warn("Failed loading config, using defaults.", e)
+            throw new RuntimeException("Error parsing configuration file. To restore defaults, delete '" + file.getName + "' and restart the game.", e)
           }
           settings = new Settings(defaults.getConfig("opencomputers"))
           defaults
