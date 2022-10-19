@@ -1,3 +1,9 @@
 minecraft {
     replace "@VERSION@", versionDetails().lastTag
 }
+
+tasks.withType(ScalaCompile) {
+    scalaCompileOptions.forkOptions.with {
+        memoryMaximumSize = '4g'
+    }
+}
