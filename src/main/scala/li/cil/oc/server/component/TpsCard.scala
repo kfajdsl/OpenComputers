@@ -54,6 +54,10 @@ class TpsCard (val host: EnvironmentHost) extends prefab.ManagedEnvironment with
   def getAllDims(context: Context, args: Arguments): Array[AnyRef] =
     result(DimensionManager.getWorlds.map( w => (w.provider.dimensionId, w.provider.getDimensionName())).toMap)
 
+  @Callback(doc = """function():table -- Returns a table with index corresponding to the dimension id and value at the index being the tick time taken by the dim.""")
+  def getAllTickTimes(context: Context, args: Arguments): Array[AnyRef] =
+    result(DimensionManager.getWorlds.map( w => (w.provider.dimensionId, getTickTimeSum(CoFHCore.server.worldTickTimes.get(w.provider.dimensionId)) * 1.0E-6D)).toMap)
+
   @Callback(doc = """function(dimension:number):string -- Returns the name corresponding to the dimension.""")
   def getNameForDim(context: Context, args: Arguments): Array[AnyRef] = {
     val dim = args.checkInteger(0)
