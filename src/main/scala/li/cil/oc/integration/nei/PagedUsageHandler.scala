@@ -43,11 +43,11 @@ abstract class PagedUsageHandler(val pages: Option[Array[String]]) extends IUsag
 
   override def getOverlayRenderer(gui: GuiContainer, recipe: Int) = null
 
-  override def handleTooltip(gui: GuiRecipe, tooltip: util.List[String], recipe: Int) = tooltip
+  override def handleTooltip(gui: GuiRecipe[_], tooltip: util.List[String], recipe: Int) = tooltip
 
-  override def handleItemTooltip(gui: GuiRecipe, stack: ItemStack, tooltip: util.List[String], recipe: Int) = tooltip
+  override def handleItemTooltip(gui: GuiRecipe[_], stack: ItemStack, tooltip: util.List[String], recipe: Int) = tooltip
 
-  override def keyTyped(gui: GuiRecipe, char: Char, code: Int, recipe: Int) = false
+  override def keyTyped(gui: GuiRecipe[_], char: Char, code: Int, recipe: Int) = false
 
-  override def mouseClicked(gui: GuiRecipe, x: Int, y: Int) = false
+  override def mouseClicked(gui: GuiRecipe[_], x: Int, y: Int) = false
 }
