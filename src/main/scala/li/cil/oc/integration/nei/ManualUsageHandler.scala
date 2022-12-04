@@ -62,13 +62,13 @@ class ManualUsageHandler(path: Option[String]) extends IUsageHandler {
 
   override def getOverlayRenderer(gui: GuiContainer, i: Int): IRecipeOverlayRenderer = null
 
-  override def handleTooltip(gui: GuiRecipe, tooltip: util.List[String], i: Int): util.List[String] = tooltip
+  override def handleTooltip(gui: GuiRecipe[_], tooltip: util.List[String], i: Int): util.List[String] = tooltip
 
-  override def handleItemTooltip(gui: GuiRecipe, stack: ItemStack, tooltip: util.List[String], i: Int): util.List[String] = tooltip
+  override def handleItemTooltip(gui: GuiRecipe[_], stack: ItemStack, tooltip: util.List[String], i: Int): util.List[String] = tooltip
 
-  override def keyTyped(gui: GuiRecipe, char: Char, code: Int, recipe: Int): Boolean = false
+  override def keyTyped(gui: GuiRecipe[_], char: Char, code: Int, recipe: Int): Boolean = false
 
-  override def mouseClicked(container: GuiRecipe, btn: Int, recipe: Int): Boolean = path.isDefined && (container match {
+  override def mouseClicked(container: GuiRecipe[_], btn: Int, recipe: Int): Boolean = path.isDefined && (container match {
     case container: GuiContainer =>
       val pos = GuiDraw.getMousePosition
       val mc = Minecraft.getMinecraft
